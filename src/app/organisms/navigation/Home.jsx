@@ -10,7 +10,7 @@ import Postie from '../../../util/Postie';
 import Text from '../../atoms/text/Text';
 import Selector from './Selector';
 
-import { AtoZ } from './common';
+import { AtoZ, mostRecentlyMessaged } from './common';
 
 const drawerPostie = new Postie();
 function Home({ spaceId }) {
@@ -34,7 +34,7 @@ function Home({ spaceId }) {
 
   // TODO: temporary, remove later: combines all rooms and DMs into single list
   // (using directIds list since this list is displayed with profile pictures in sidebar)
-  directIds = [...roomIds, ...roomList.directs].sort(AtoZ);
+  directIds = [...roomIds, ...roomList.directs].sort(mostRecentlyMessaged);
   roomIds = [];
 
   function selectorChanged(selectedRoomId, prevSelectedRoomId) {

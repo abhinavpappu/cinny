@@ -18,4 +18,10 @@ function AtoZ(aId, bId) {
   return 0;
 }
 
-export { AtoZ };
+function mostRecentlyMessaged(aId, bId) {
+  const aTimestamp = initMatrix.matrixClient.getRoom(aId).getLastActiveTimestamp();
+  const bTimestamp = initMatrix.matrixClient.getRoom(bId).getLastActiveTimestamp();
+  return bTimestamp - aTimestamp;
+}
+
+export { AtoZ, mostRecentlyMessaged };
