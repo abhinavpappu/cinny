@@ -12,6 +12,32 @@ import RoomOptions from '../../organisms/room-optons/RoomOptions';
 import logout from '../../../client/action/logout';
 
 import initMatrix from '../../../client/initMatrix';
+import cons from '../../../client/state/cons';
+
+const setNotificationBadge = () => {
+  const { roomList, notifications } = initMatrix;
+  if (roomList && notifications) {
+    const roomIds = [...roomList.rooms, ...roomList.directs]; // combine group chats and DMs
+    let totalUnreadChats = 0;
+    roomIds.forEach((roomId) => {
+      if (notifications.hasNoti(roomId)) {
+        totalUnreadChats += 1;
+      }
+    });
+
+    if (totalUnreadChats > 0) {
+      navigator.setAppBadge(totalUnreadChats);
+    } else {
+      navigator.clearAppBadge();
+    }
+  }
+};
+
+const onNotificationChange = (roomId, total, prevTotal) => {
+  if (total !== prevTotal) {
+    setNotificationBadge();
+  }
+};
 
 function Client() {
   const [isLoading, changeLoading] = useState(true);
@@ -32,11 +58,26 @@ function Client() {
       setLoadingMsg(msgList[counter]);
       counter += 1;
     }, 9000);
+
     initMatrix.once('init_loading_finished', () => {
       clearInterval(iId);
       changeLoading(false);
+
+      const { notifications } = initMatrix;
+      if (notifications) {
+        notifications.on(cons.events.notifications.NOTI_CHANGED, onNotificationChange);
+      }
+      setNotificationBadge();
     });
+
     initMatrix.init();
+
+    return () => {
+      const { notifications } = initMatrix;
+      if (notifications) {
+        notifications.removeListener(cons.events.notifications.NOTI_CHANGED, onNotificationChange);
+      }
+    };
   }, []);
 
   if (isLoading) {
