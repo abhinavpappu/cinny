@@ -32,6 +32,11 @@ function Home({ spaceId }) {
       .filter((roomId) => !roomList.roomIdToParents.has(roomId)).sort(AtoZ);
   }
 
+  // TODO: temporary, remove later: combines all rooms and DMs into single list
+  // (using directIds list since this list is displayed with profile pictures in sidebar)
+  directIds = [...roomIds, ...roomList.directs].sort(AtoZ);
+  roomIds = [];
+
   function selectorChanged(selectedRoomId, prevSelectedRoomId) {
     if (!drawerPostie.hasTopic('selector-change')) return;
     const addresses = [];
